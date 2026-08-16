@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LifeLine &mdash; Community Blood &amp; Platelet Emergency Network</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<!-- ============ TOP NAV ============ -->
+<header class="topbar">
+  <div class="topbar__inner">
+    <div class="brand">
+      <span class="brand__mark">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2.5C12 2.5 4.5 11.2 4.5 15.8C4.5 20 7.8 22.5 12 22.5C16.2 22.5 19.5 20 19.5 15.8C19.5 11.2 12 2.5 12 2.5Z" fill="currentColor"/>
+        </svg>
+      </span>
+      <span class="brand__text">LifeLine</span>
+    </div>
+    <nav class="navtabs" id="navtabs">
+      <button class="navtabs__btn is-active" data-view="home">Home</button>
+      <button class="navtabs__btn" data-view="board">Active Board</button>
+      <button class="navtabs__btn" data-view="request">Request Blood</button>
+      <button class="navtabs__btn" data-view="donate">Become a Donor</button>
+      <button class="navtabs__btn" data-view="find">Find Donors</button>
+    </nav>
+  </div>
+  <!-- live critical ticker -->
+  <div class="ticker" id="ticker">
+    <div class="ticker__label"><span class="pulse-dot"></span>LIVE</div>
+    <div class="ticker__track" id="tickerTrack">
+      <span class="ticker__empty">No critical requests right now &mdash; network is stable.</span>
+    </div>
+  </div>
+</header>
+
+<main id="app">
+
+  <!-- ============ HOME VIEW ============ -->
+  <section class="view is-active" data-view="home">
+    <div class="hero">
+      <div class="hero__copy">
+        <p class="eyebrow">Community Blood &amp; Platelet Emergency Network</p>
+        <h1>Right blood group.<br>Right city.<br>Right now.</h1>
+        <p class="hero__sub">A live directory connecting willing donors to patients who need blood or platelets urgently &mdash; no middleman, no delay.</p>
+        <div class="hero__cta">
+          <button class="btn btn--primary" data-goto="request">I need blood &rarr;</button>
+          <button class="btn btn--ghost" data-goto="donate">I want to donate</button>
+        </div>
+      </div>
+      <div class="hero__stats" id="statsGrid">
+        <div class="stat">
+          <span class="stat__num" id="statDonors">&mdash;</span>
+          <span class="stat__label">Available donors</span>
+        </div>
+        <div class="stat">
+          <span class="stat__num" id="statActive">&mdash;</span>
+          <span class="stat__label">Active requests</span>
+        </div>
+        <div class="stat stat--critical">
+          <span class="stat__num" id="statCritical">&mdash;</span>
+          <span class="stat__label">Critical right now</span>
+        </div>
+        <div class="stat">
+          <span class="stat__num" id="statCities">&mdash;</span>
+          <span class="stat__label">Cities covered</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="howitworks">
+      <h2>How the network responds</h2>
+      <div class="steps">
+        <div class="step">
+          <span class="step__tag">POST</span>
+          <h3>Raise a request</h3>
+          <p>Hospital, blood group, units, urgency &mdash; posted to the live board in seconds.</p>
+        </div>
+        <div class="step">
+          <span class="step__tag">MATCH</span>
+          <h3>System surfaces donors</h3>
+          <p>Filtered instantly by blood group and city, available donors closest to the need rise first.</p>
+        </div>
+        <div class="step">
+          <span class="step__tag">CALL</span>
+          <h3>Direct contact, no delay</h3>
+          <p>Phone numbers are shown directly &mdash; donor and requester connect without waiting on a moderator.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ACTIVE BOARD VIEW ============ -->
+  <section class="view" data-view="board">
+    <div class="view__header">
+      <div>
+        <h2>Active Board</h2>
+        <p class="view__sub">Every open request, most critical first.</p>
+      </div>
+      <div class="filterbar">
+        <select id="boardBloodFilter">
+          <option value="">All blood groups</option>
+        </select>
+        <input type="text" id="boardCityFilter" placeholder="Filter by city">
+        <button class="btn btn--small" id="boardRefresh">Refresh</button>
+      </div>
+    </div>
+    <div class="cards" id="requestBoard">
+      <p class="empty">Loading requests&hellip;</p>
+    </div>
+  </section>
+
+  <!-- ============ REQUEST BLOOD VIEW ============ -->
+  <section class="view" data-view="request">
+    <div class="formwrap">
+      <div class="formwrap__intro">
+        <p class="eyebrow eyebrow--tight">Emergency Request</p>
+        <h2>Post what's needed</h2>
+        <p class="view__sub">This goes straight to the live board and to every matching donor's search. Be specific &mdash; it speeds up the match.</p>
+      </div>
+      <form id="requestForm" class="form">
+        <div class="form__row">
+          <label>Patient name<input type="text" name="patient_name" required placeholder="Who needs it"></label>
+          <label>Blood group<select name="blood_group" required class="bg-select"><option value="">Select</option></select></label>
+        </div>
+        <div class="form__row">
+          <label>Component
+            <select name="component">
+              <option value="Whole Blood">Whole Blood</option>
+              <option value="Platelets">Platelets</option>
+              <option value="Plasma">Plasma</option>
+            </select>
+          </label>
+          <label>Units needed<input type="number" name="units_needed" min="1" value="1" required></label>
+        </div>
+        <div class="form__row">
+          <label>Hospital<input type="text" name="hospital" required placeholder="Hospital / clinic name"></label>
+          <label>City<input type="text" name="city" required placeholder="City"></label>
+        </div>
+        <div class="form__row">
+          <label>Your name<input type="text" name="contact_name" required placeholder="Contact person"></label>
+          <label>Contact phone<input type="tel" name="contact_phone" required placeholder="10-digit number"></label>
+        </div>
+        <label>Urgency
+          <div class="urgency-picker" id="urgencyPicker">
+            <button type="button" class="urgency-opt" data-value="Critical">Critical</button>
+            <button type="button" class="urgency-opt" data-value="Urgent">Urgent</button>
+            <button type="button" class="urgency-opt is-active" data-value="Normal">Normal</button>
+          </div>
+          <input type="hidden" name="urgency" value="Normal">
+        </label>
+        <label>Notes <span class="optional">(optional)</span>
+          <textarea name="notes" rows="2" placeholder="Anything a donor should know"></textarea>
+        </label>
+        <button type="submit" class="btn btn--primary btn--full">Post request to the board</button>
+        <p class="form__msg" id="requestMsg"></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- ============ DONATE VIEW ============ -->
+  <section class="view" data-view="donate">
+    <div class="formwrap">
+      <div class="formwrap__intro">
+        <p class="eyebrow eyebrow--tight">Donor Registration</p>
+        <h2>Join the donor pool</h2>
+        <p class="view__sub">You'll be searchable instantly by blood group and city. You can mark yourself unavailable any time from the Find Donors tab.</p>
+      </div>
+      <form id="donateForm" class="form">
+        <div class="form__row">
+          <label>Full name<input type="text" name="name" required placeholder="Your name"></label>
+          <label>Blood group<select name="blood_group" required class="bg-select"><option value="">Select</option></select></label>
+        </div>
+        <div class="form__row">
+          <label>Phone<input type="tel" name="phone" required placeholder="10-digit number"></label>
+          <label>Email <span class="optional">(optional)</span><input type="email" name="email" placeholder="you@example.com"></label>
+        </div>
+        <div class="form__row">
+          <label>City<input type="text" name="city" required placeholder="City"></label>
+          <label>Last donated <span class="optional">(optional)</span><input type="text" name="last_donated" placeholder="e.g. March 2026"></label>
+        </div>
+        <label class="checkline">
+          <input type="checkbox" name="can_donate_platelets">
+          <span>I'm also willing to donate platelets (apheresis)</span>
+        </label>
+        <button type="submit" class="btn btn--primary btn--full">Register as donor</button>
+        <p class="form__msg" id="donateMsg"></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- ============ FIND DONORS VIEW ============ -->
+  <section class="view" data-view="find">
+    <div class="view__header">
+      <div>
+        <h2>Find Donors</h2>
+        <p class="view__sub">Search the live donor pool by blood group and city.</p>
+      </div>
+      <div class="filterbar">
+        <select id="findBloodFilter">
+          <option value="">All blood groups</option>
+        </select>
+        <input type="text" id="findCityFilter" placeholder="Filter by city">
+        <label class="checkline checkline--compact">
+          <input type="checkbox" id="findPlateletsFilter">
+          <span>Platelet donors only</span>
+        </label>
+        <button class="btn btn--small" id="findRefresh">Search</button>
+      </div>
+    </div>
+    <div class="cards" id="donorResults">
+      <p class="empty">Loading donors&hellip;</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>LifeLine &mdash; a community blood &amp; platelet emergency network. Numbers shown are provided directly by donors and requesters &mdash; always verify before travel.</p>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script src="/js/app.js"></script>
+</body>
+</html>
