@@ -25,10 +25,11 @@ app = Flask(__name__)
 DB_USER = os.environ.get("DB_USER", "root")
 DB_PASS = os.environ.get("DB_PASS", "password")
 DB_HOST = os.environ.get("DB_HOST", "localhost")
+DB_PORT = os.environ.get("DB_PORT", "3306")
 DB_NAME = os.environ.get("DB_NAME", "blood_network")
 
 # MySQL connection string (uses PyMySQL driver).
-MYSQL_URL = f"mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}"
+MYSQL_URL = f"mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 # Fallback to SQLite automatically for local testing (USE_SQLITE=1, the
 # default when you just run `python app.py` on your own machine).
